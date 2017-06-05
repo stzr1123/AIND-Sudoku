@@ -46,11 +46,15 @@ def naked_twins(values: dict) -> dict:
         the values dictionary with the naked twins eliminated from peers.
     """
 
-    # Find all instances of naked twins
-    # Eliminate the naked twins as possibilities for their peers
-
-    # General solution:
+    # GENERAL SOLUTION:
+    # Iterate over each box in the grid and check for naked twins by
+    # iterating over its peers and determining if it is a column peer or
+    # a row peer.
     #
+    # For each box, two twins may exist. This algorithm only finds one of them
+    # per box, knowing that the other naked twin will be found when iterating
+    # over that second box. In other words, all instances of naked twins will
+    # be found.
 
     for box, partial_sols in values.items():
         if len(partial_sols) == 2:
@@ -65,25 +69,29 @@ def naked_twins(values: dict) -> dict:
 
                     if (peer_box_col == box_col) or (peer_box_row == box_row):
                         # check if peer box is a twin, i.e. shares the same two solutions
+                        # and is either a column peer or row peer
                         if all([peer_sols[0] in partial_sols, peer_sols[1] in partial_sols]):
                             twin = peer_box
                             is_column_twin = peer_box_col == box_col
                             break
 
             else:
-                # this box has no twin
+                # this box has no twin, process next box
                 continue
 
-            # iterate over peers again to remove the 2 possible sols
+            # iterate over box peers again and remove the 2 possible sols
             for peer_box in peers[box]:
                 peer_box_row = peer_box[0]
                 peer_box_col = peer_box[1]
                 if (peer_box == twin or
                     (is_column_twin and peer_box_col != box_col) or
                     (not is_column_twin and peer_box_row != box_row)):
+                    # only remove twin solutions from peers in the same
+                    # row or column
                     continue
                 for digit in partial_sols:
-                    values[peer_box] = values[peer_box].replace(digit, '')
+                    new_value = values[peer_box].replace(digit, '')
+                    assign_value(values, peer_box, new_value)
 
     return values
 
