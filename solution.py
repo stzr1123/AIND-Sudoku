@@ -50,22 +50,12 @@ def naked_twins(values: dict) -> dict:
     # Eliminate the naked twins as possibilities for their peers
 
     # General solution:
-    # iterate over boxes, if it has two possibilities iterate over peers
-    # to see if any other have the same values, remove values from the other peers
-
-    # TODO: assert only one peer has the same 2 sols, otherwise don't eliminate values!
-    # apparently only works for the same column
-
-    solved_twin = set()
+    #
 
     for box, partial_sols in values.items():
-        if len(partial_sols) == 2 and box not in solved_twin:
-            # box has two possible solutions
+        if len(partial_sols) == 2:
             box_row = box[0]
             box_col = box[1]
-
-            twin_1 = None
-            twin_2 = None
 
             for peer_box in peers[box]:
                 peer_sols = values[peer_box]
@@ -74,25 +64,23 @@ def naked_twins(values: dict) -> dict:
                     peer_box_col = peer_box[1]
 
                     if (peer_box_col == box_col) or (peer_box_row == box_row):
+                        # check if peer box is a twin, i.e. shares the same two solutions
                         if all([peer_sols[0] in partial_sols, peer_sols[1] in partial_sols]):
-                            # peer box shares the same possible sols
                             twin = peer_box
-                            solved_twin.add(twin)
-                            # print('{} {}'.format(box, twin))
+                            is_column_twin = peer_box_col == box_col
                             break
 
             else:
-                # this box has no twin peer
-                # import ipdb; ipdb.set_trace()
+                # this box has no twin
                 continue
 
             # iterate over peers again to remove the 2 possible sols
-            peers_subset = peers[box]
-            # list(map(peers_subset.add, peers[twin]))
-            for peer_box in peers_subset:
+            for peer_box in peers[box]:
                 peer_box_row = peer_box[0]
                 peer_box_col = peer_box[1]
-                if peer_box == twin or peer_box_col != box_col:
+                if (peer_box == twin or
+                    (is_column_twin and peer_box_col != box_col) or
+                    (not is_column_twin and peer_box_row != box_row)):
                     continue
                 for digit in partial_sols:
                     values[peer_box] = values[peer_box].replace(digit, '')
