@@ -2,18 +2,22 @@
 ## Introductory Project: Diagonal Sudoku Solver
 
 # Question 1 (Naked Twins)
-Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+Q: How do we use constraint propagation to solve the naked twins problem?
+A: In the naked twins problem we add the following constraint to the system. If a box inside the board contains only two possible solutions, and there exists a box within its peers that also contains the same two possible solutions, then these two boxes are said to be "naked twins".
+
+If the naked twins lie on the same column, the constraint can be propagated to the other boxes in the same column by eliminating the two "twin" solutions from their possible set of solutions. The same process can be done to row boxes if the twins lie on the same row. Since the two possible solutions apply to both of the twin boxes, as soon as one is defined with one of the two values, the other must be set to the remaining value.
+
+It is possible for one box to have two naked twins. One naked twin on its row and one on its column.
 
 # Question 2 (Diagonal Sudoku)
-Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
+Q: How do we use constraint propagation to solve the diagonal sudoku problem?
 A: *Student should provide answer here*
 
 ### Install
 
 This project requires **Python 3**.
 
-We recommend students install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python distribution that contains all of the necessary libraries and software for this project. 
+We recommend students install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python distribution that contains all of the necessary libraries and software for this project.
 Please try using the environment we provided in the Anaconda lesson of the Nanodegree.
 
 ##### Optional: Pygame
@@ -41,4 +45,3 @@ The setup is simple.  If you have not installed the client tool already, then yo
 To submit your code to the project assistant, run `udacity submit` from within the top-level directory of this project.  You will be prompted for a username and password.  If you login using google or facebook, visit [this link](https://project-assistant.udacity.com/auth_tokens/jwt_login for alternate login instructions.
 
 This process will create a zipfile in your top-level directory named sudoku-<id>.zip.  This is the file that you should submit to the Udacity reviews system.
-
