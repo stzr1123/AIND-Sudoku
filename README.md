@@ -11,7 +11,7 @@ It is possible for one box to have two naked twins. One naked twin on its row an
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?
-A: *Student should provide answer here*
+A: The diagonal sudoku adds an additional constraint to the original sudoku. In this modified version, boxes that belong to one of the two diagonals on the board will belong to a new unit of boxes, i.e. the diagonal of boxes. The previous algorithms of search, only choice and eliminate can be run unchanged since the only modification that is needed is the addition of these two new diagonal units.
 
 ### Install
 
