@@ -20,7 +20,7 @@ diagonal_units_1 = [rs+cs for rs, cs in zip(rows, cols)]
 diagonal_units_2 = [rs+cs for rs, cs in zip(rows, reversed(cols))]
 diagonal_units = [diagonal_units_1, diagonal_units_2]
 unitlist = row_units + column_units + square_units
-square_peers = dict((s, [u for u in square_units if s in u]) for s in boxes)
+square_peers = dict((s, [u for u in square_units if s in u][0]) for s in boxes)
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 
@@ -62,45 +62,49 @@ def naked_twins(values: dict) -> dict:
 
     for box, partial_sols in values.items():
         if len(partial_sols) == 2:
-            box_row = box[0]
-            box_col = box[1]
+            box_row, box_col = box
 
             for peer_box in peers[box]:
                 peer_sols = values[peer_box]
-                if len(peer_sols) == 2:
-                    peer_box_row = peer_box[0]
-                    peer_box_col = peer_box[1]
+
+                if len(peer_sols) == 2 and all([sol in partial_sols for sol in peer_sols]):
+                    # Solutions for peer_box are matching.
+                    peer_box_row, peer_box_col = peer_box
 
                     if (peer_box_col == box_col) or (peer_box_row == box_row):
-                        # check if peer box is a twin, i.e. shares the same two solutions
-                        # and is either a column peer or row peer
-                        if all([peer_sols[0] in partial_sols, peer_sols[1] in partial_sols]):
-                            twin = peer_box
-                            is_column_twin = peer_box_col == box_col
-                            break
+                        # Peer box needs to share column or row to be naked twin.
+                        twin = peer_box
+                        is_column_twin = peer_box_col == box_col
+                        twin_in_square_peers = twin in square_peers[box]
+                        break
 
             else:
-                # this box has no twin, process next box
+                # This box has no naked twin.
                 continue
 
-            # iterate over box peers again and remove the 2 possible sols
+            # Remove the naked twin solutions from its peers.
             for peer_box in peers[box]:
-                peer_box_row = peer_box[0]
-                peer_box_col = peer_box[1]
+                peer_box_row, peer_box_col = peer_box
 
-                if (peer_box == twin):
+                if peer_box == twin:
                     continue
 
-                elif not peer_box in square_peers[box][0]:
-                    if ((is_column_twin and peer_box_col != box_col) or
-                        (not is_column_twin and peer_box_row != box_row)):
-                        # only remove twin solutions from peers in the same
-                        # row or column
-                        continue
-                elif peer_box in square_peers[box][0] and not twin in square_peers[box][0]:
+                elif ((is_column_twin and peer_box_col == box_col) or
+                    (not is_column_twin and peer_box_row == box_row)):
+                    # If peer is in the same row or column as box
+                    # then we need to process it.
+                    pass
+
+                elif twin_in_square_peers and peer_box in square_peers[box]:
+                    # If the naked twin is inside the 3x3 square of peers and
+                    # this peer is too, then we need to process it.
+                    pass
+
+                else:
+                    # None of these conditions apply, so continue with the next
+                    # peer box.
                     continue
 
-                # TODO: remove values from same 3x3 square
                 for digit in partial_sols:
                     new_value = values[peer_box].replace(digit, '')
                     assign_value(values, peer_box, new_value)
