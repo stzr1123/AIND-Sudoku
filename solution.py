@@ -20,6 +20,7 @@ diagonal_units_1 = [rs+cs for rs, cs in zip(rows, cols)]
 diagonal_units_2 = [rs+cs for rs, cs in zip(rows, reversed(cols))]
 diagonal_units = [diagonal_units_1, diagonal_units_2]
 unitlist = row_units + column_units + square_units
+square_peers = dict((s, [u for u in square_units if s in u]) for s in boxes)
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 
@@ -86,12 +87,20 @@ def naked_twins(values: dict) -> dict:
             for peer_box in peers[box]:
                 peer_box_row = peer_box[0]
                 peer_box_col = peer_box[1]
-                if (peer_box == twin or
-                    (is_column_twin and peer_box_col != box_col) or
-                    (not is_column_twin and peer_box_row != box_row)):
-                    # only remove twin solutions from peers in the same
-                    # row or column
+
+                if (peer_box == twin):
                     continue
+
+                elif not peer_box in square_peers[box][0]:
+                    if ((is_column_twin and peer_box_col != box_col) or
+                        (not is_column_twin and peer_box_row != box_row)):
+                        # only remove twin solutions from peers in the same
+                        # row or column
+                        continue
+                elif peer_box in square_peers[box][0] and not twin in square_peers[box][0]:
+                    continue
+
+                # TODO: remove values from same 3x3 square
                 for digit in partial_sols:
                     new_value = values[peer_box].replace(digit, '')
                     assign_value(values, peer_box, new_value)

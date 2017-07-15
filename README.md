@@ -3,15 +3,21 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?
+
 A: In the naked twins problem we add the following constraint to the system. If a box inside the board contains only two possible solutions, and there exists a box within its peers that also contains the same two possible solutions, then these two boxes are said to be "naked twins".
 
-If the naked twins lie on the same column, the constraint can be propagated to the other boxes in the same column by eliminating the two "twin" solutions from their possible set of solutions. The same process can be done to row boxes if the twins lie on the same row. Since the two possible solutions apply to both of the twin boxes, as soon as one is defined with one of the two values, the other must be set to the remaining value.
+If the naked twins lie on the same column, the constraint can be propagated to the other boxes in the same column by eliminating the two "twin" solutions from their possible set of solutions. The same process can be done to row boxes if the twins lie on the same row.
 
 It is possible for one box to have two naked twins. One naked twin on its row and one on its column.
 
+There is one additional check to keep in mind. If both twin boxes lie on the same 3x3 square, then it is also possible to remove their set of two solutions from all the peer boxes in the same 3x3 square.
+
+Since the two possible solutions apply only to the twin boxes, as soon as one is defined with one of the two values, the other must be set to the remaining value.
+
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?
-A: The diagonal sudoku adds an additional constraint to the original sudoku. In this modified version, boxes that belong to one of the two diagonals on the board will belong to a new unit of boxes, i.e. the diagonal of boxes. The previous algorithms of search, only choice and eliminate can be run unchanged since the only modification that is needed is the addition of these two new diagonal units.
+
+A: The diagonal sudoku adds an additional constraint to the original sudoku. In this modified version, boxes that belong to one of the two diagonals on the board will belong to a new unit of boxes, i.e. the diagonal of boxes. This means that the previous algorithms of *search*, *only choice* and *eliminate* don't need to be modified since these are based solely on the peers of a given box. All that is required from us to do is to add the additional diagonal boxes to the set of peers for the respective boxes.
 
 ### Install
 
